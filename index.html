@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rizzsembly — Where Chemistry Meets Speed</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              pink: '#ff2d55',
+              purple: '#8a2be2',
+              violet: '#6c1ec4',
+              cyan: '#00f2fe',
+              dark: '#0a0a14',
+              card: '#131525',
+              surface: '#1b1e36'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti for Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-[#0a0a14] text-slate-100 min-h-screen selection:bg-rose-500 selection:text-white relative">
+
+  <!-- Glowing Background Orbs for Parallax Atmosphere -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="glow-orb w-[500px] h-[500px] bg-rose-600 top-[-100px] left-[-150px]"></div>
+    <div class="glow-orb w-[600px] h-[600px] bg-purple-700 top-[30%] right-[-200px]" style="animation-delay: -4s;"></div>
+    <div class="glow-orb w-[450px] h-[450px] bg-cyan-600 bottom-[-150px] left-[20%]" style="animation-delay: -8s;"></div>
+    <!-- Grid overlay pattern -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div id="app" class="relative z-10 min-h-screen flex flex-col justify-between">
+    
+    <!-- TOP NAVBAR (Visible in main app or as brand header in landing) -->
+    <header id="main-header" class="sticky top-0 z-40 w-full glass-panel border-b border-white/10 px-4 sm:px-8 py-3.5 transition-all">
+      <div class="max-w-7xl mx-auto flex items-center justify-between">
+        
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="RizzApp.showView('landing')">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-rose-500/30">
+            <i data-lucide="flame" class="w-6 h-6 text-white fill-white"></i>
+          </div>
+          <div>
+            <span class="text-2xl font-black tracking-tight text-white brand-font">Rizz<span class="text-rose-500">sembly</span></span>
+            <span class="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              India Edition 🇮🇳
+            </span>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons (Shown only when User has paid and completed onboarding) -->
+        <nav id="app-nav" class="hidden md:flex items-center gap-1.5 p-1 rounded-2xl bg-white/5 border border-white/10">
+          <button onclick="RizzApp.showView('landing')" class="nav-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white/10 text-amber-300" data-page="landing">
+            <i data-lucide="qr-code" class="w-4 h-4 text-cyan-400"></i>
+            <span>Pay & Pricing</span>
+          </button>
+          <button onclick="RizzApp.navigateTo('home')" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white/10 text-rose-500 bg-white/10" data-page="home">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Discover</span>
+          </button>
+          <button onclick="RizzApp.navigateTo('friends')" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white/10 text-slate-300" data-page="friends">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>Friends</span>
+            <span id="friends-badge" class="ml-1 px-1.5 py-0.2 text-[10px] bg-rose-500 text-white rounded-full font-bold hidden">0</span>
+          </button>
+          <button onclick="RizzApp.openAddFriendModal()" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white/10 text-slate-300" data-page="add-friend">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>Add Friend</span>
+          </button>
+          <button onclick="RizzApp.navigateTo('settings')" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white/10 text-slate-300" data-page="settings">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <!-- Right Action Items -->
+        <div class="flex items-center gap-3">
+          <!-- Direct Quick QR Payment Trigger -->
+          <button onclick="RizzApp.initiatePayment('lifetime', 59, 'Lifetime Pass')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-md transition-all">
+            <i data-lucide="qr-code" class="w-4 h-4"></i>
+            <span>UPI QR Pay</span>
+          </button>
+
+          <!-- Start Video Call Button (Shown when logged in) -->
+          <button id="header-videocall-btn" onclick="RizzApp.startRandomVideoCall()" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 text-white shadow-lg shadow-rose-500/25 hover:scale-105 transition-all">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+            <i data-lucide="video" class="w-4 h-4"></i>
+            <span>Random Video Call</span>
+          </button>
+
+          <!-- User quick mini profile pill -->
+          <div id="user-header-pill" class="hidden items-center gap-2 pl-2 pr-3 py-1.5 rounded-full bg-white/5 border border-white/10 cursor-pointer hover:border-rose-500/40 transition-all" onclick="RizzApp.navigateTo('settings')">
+            <img id="nav-user-avatar" src="" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-rose-500">
+            <span id="nav-user-name" class="text-xs font-bold text-white max-w-[100px] truncate">User</span>
+            <span id="nav-user-rizz" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">#RIZZ</span>
+          </div>
+
+          <!-- Landing Page Pricing Jump Button (for non-paid users) -->
+          <a id="landing-cta-btn" href="#pricing-section" onclick="RizzApp.showView('landing')" class="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/30 transition-all">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Join Now</span>
+          </a>
+
+          <!-- Quick Test Reset Paywall Button -->
+          <button onclick="RizzApp.resetToPaywall()" class="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-slate-400 hover:text-rose-400 border border-white/10 transition-all" title="Reset demo to fresh unpaid visitor mode">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: LANDING PAGE WITH PARALLAX & PRICING PLANS (₹20, ₹50, ₹59) -->
+    <!-- ========================================================================= -->
+    <main id="view-landing" class="view-screen active flex-1">
+      
+      <!-- Banner for users who already have active pass -->
+      <div id="paid-visitor-banner" class="hidden max-w-4xl mx-auto mt-4 px-4">
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-purple-950/50 to-black/80 border border-emerald-500/40 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+              <i data-lucide="crown" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="text-[11px] text-emerald-300 font-bold uppercase tracking-wider">Active Pass Detected</p>
+              <p id="paid-banner-plan" class="text-sm font-bold text-white">Lifetime VIP Pass Active</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="RizzApp.navigateTo('home')" class="px-4 py-2 rounded-xl btn-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-md">
+              <span>Go to Dating Feed</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="RizzApp.resetToPaywall()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-white/10">
+              Reset Demo
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Hero Section with Smooth Parallax Float -->
+      <section class="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 overflow-hidden">
+        <div class="max-w-5xl mx-auto text-center relative z-10 space-y-8">
+          
+          <!-- Floating Status Pill -->
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl animate-bounce">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs sm:text-sm font-semibold tracking-wide text-rose-300">
+              ⚡ Over 14,290+ singles active right now in India & worldwide
+            </span>
+          </div>
+
+          <!-- Headline -->
+          <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] text-white">
+            Find Your Vibe, <br class="hidden sm:inline" />
+            Assemble Your <span class="text-gradient">Rizz.</span>
+          </h1>
+
+          <p class="max-w-2xl mx-auto text-base sm:text-xl text-slate-300 font-normal leading-relaxed">
+            India's most exciting paid dating & global random video call experience. Pay once, verify your intent, and start connecting with real people instantly. Zero bot spam.
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <a href="#pricing-section" class="w-full sm:w-auto px-8 py-4 rounded-2xl btn-primary text-white font-bold text-lg flex items-center justify-center gap-3 group">
+              <span>Get Access From ₹20</span>
+              <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            <a href="#how-it-works" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-base flex items-center justify-center gap-2 transition-all">
+              <i data-lucide="play-circle" class="w-5 h-5 text-rose-400"></i>
+              <span>How Rizzsembly Works</span>
+            </a>
+          </div>
+
+          <!-- Feature badges list -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-10 max-w-4xl mx-auto text-left">
+            <div class="glass-card p-4 rounded-2xl">
+              <i data-lucide="shield-check" class="w-6 h-6 text-rose-400 mb-2"></i>
+              <h4 class="font-bold text-sm text-white">100% Real Members</h4>
+              <p class="text-xs text-slate-400 mt-1">Paid verification eliminates all bot profiles & scams.</p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl">
+              <i data-lucide="video" class="w-6 h-6 text-cyan-400 mb-2"></i>
+              <h4 class="font-bold text-sm text-white">Global Video Call</h4>
+              <p class="text-xs text-slate-400 mt-1">1-click random video chat across borders. Skip & Chat.</p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl">
+              <i data-lucide="fingerprint" class="w-6 h-6 text-purple-400 mb-2"></i>
+              <h4 class="font-bold text-sm text-white">Unique Rizz Number</h4>
+              <p class="text-xs text-slate-400 mt-1">Add friends directly by sharing your secret Rizz tag.</p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl">
+              <i data-lucide="sliders" class="w-6 h-6 text-emerald-400 mb-2"></i>
+              <h4 class="font-bold text-sm text-white">Age Filter 18-99</h4>
+              <p class="text-xs text-slate-400 mt-1">Precise opposite-gender discovery with photo reels.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Interactive Parallax Showcase / How It Works -->
+      <section id="how-it-works" class="py-20 px-4 sm:px-6 lg:px-8 border-y border-white/10 bg-black/30 relative">
+        <div class="max-w-6xl mx-auto space-y-14">
+          <div class="text-center space-y-3">
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+              Why People Love <span class="text-gradient">Rizzsembly</span>
+            </h2>
+            <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+              A 3-step seamless journey designed for modern singles who value genuine connection and spontaneous fun.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="glass-card p-8 rounded-3xl relative overflow-hidden group">
+              <div class="absolute -right-6 -bottom-6 text-8xl font-black text-white/5 group-hover:text-rose-500/10 transition-colors">01</div>
+              <div class="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 mb-6">
+                <i data-lucide="credit-card" class="w-7 h-7"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">1. Micro-Payment Entry</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Choose a plan as low as <strong class="text-rose-400">₹20 for 1 Day</strong>, <strong class="text-rose-400">₹50 for 1 Year</strong>, or <strong class="text-rose-400">₹59 for Lifetime</strong>. This small fee guarantees a bot-free sanctuary.
+              </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="glass-card p-8 rounded-3xl relative overflow-hidden group">
+              <div class="absolute -right-6 -bottom-6 text-8xl font-black text-white/5 group-hover:text-purple-500/10 transition-colors">02</div>
+              <div class="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 mb-6">
+                <i data-lucide="user-check" class="w-7 h-7"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">2. Profile Setup & Photos</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Enter your age (18 to 99), qualification, hobbies, your target age bracket, and upload 1-5 authentic photos. Your personalized <strong class="text-purple-300">Rizz Number</strong> is automatically minted.
+              </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="glass-card p-8 rounded-3xl relative overflow-hidden group">
+              <div class="absolute -right-6 -bottom-6 text-8xl font-black text-white/5 group-hover:text-cyan-500/10 transition-colors">03</div>
+              <div class="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mb-6">
+                <i data-lucide="video" class="w-7 h-7"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">3. Date & Random Video Call</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Browse opposite gender matches or hit the <strong>Worldwide Video Call</strong> button to meet anyone across the globe in seconds. Skip, in-call chat, and add friends effortlessly!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- PRICING SECTION (₹20 / 1 Day, ₹50 / 1 Year, ₹59 / Lifetime) -->
+      <!-- ========================================================================= -->
+      <section id="pricing-section" class="py-24 px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-6xl mx-auto space-y-16">
+          
+          <div class="text-center space-y-4">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold tracking-wider uppercase">
+              Transparent Pricing
+            </div>
+            <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white">
+              Choose Your <span class="text-gradient">Rizz Pass</span>
+            </h2>
+            <p class="text-slate-400 max-w-lg mx-auto text-sm sm:text-base">
+              Instant activation via UPI, GPay, PhonePe, Cards or NetBanking. Unlock the complete Rizzsembly experience immediately.
+            </p>
+          </div>
+
+          <!-- 3 Pricing Cards -->
+          <div class="grid md:grid-cols-3 gap-8 items-stretch">
+            
+            <!-- Plan 1: 1 Day - ₹20 -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col justify-between border border-white/10 relative hover:border-white/30 transition-all">
+              <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-400 px-3 py-1 rounded-full bg-white/5 border border-white/10">Trial Pass</span>
+                  <i data-lucide="clock" class="w-5 h-5 text-slate-400"></i>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white">1 Day Pass</h3>
+                  <p class="text-xs text-slate-400 mt-1">Perfect for trying out Rizzsembly for 24 hours.</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-4xl sm:text-5xl font-black text-white">₹20</span>
+                  <span class="text-xs text-slate-400">/ 24 Hours</span>
+                </div>
+                <div class="w-full h-px bg-white/10"></div>
+                <ul class="space-y-3 text-sm text-slate-300">
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Full Access to Opposite Gender Feed</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Unlimited Random Video Calls</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Personal Rizz Number Generated</span>
+                  </li>
+                  <li class="flex items-center gap-2 text-slate-500">
+                    <i data-lucide="x" class="w-4 h-4 text-slate-600 flex-shrink-0"></i>
+                    <span>Expiring Friend Backup</span>
+                  </li>
+                </ul>
+              </div>
+              <button onclick="RizzApp.initiatePayment('1day', 20, '1 Day Pass')" class="mt-8 w-full py-3.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/20 transition-all hover:scale-[1.02]">
+                Start with ₹20
+              </button>
+            </div>
+
+            <!-- Plan 2: 1 Year - ₹50 -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col justify-between border-2 border-purple-500/50 bg-gradient-to-b from-purple-950/30 to-black/50 relative shadow-2xl shadow-purple-500/10">
+              <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-[11px] font-black tracking-wider uppercase text-white shadow-md">
+                Most Popular
+              </div>
+              <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-purple-300 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30">Annual Saver</span>
+                  <i data-lucide="zap" class="w-5 h-5 text-purple-400"></i>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white">1 Year Pass</h3>
+                  <p class="text-xs text-slate-400 mt-1">Full 365 days of uninterrupted dates & video calls.</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-4xl sm:text-5xl font-black text-white">₹50</span>
+                  <span class="text-xs text-slate-400">/ 365 Days</span>
+                </div>
+                <div class="w-full h-px bg-white/10"></div>
+                <ul class="space-y-3 text-sm text-slate-300">
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Everything in 1 Day Pass</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Priority Matching in Video Calls</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Unlimited Friends & Direct Chats</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                    <span>Verified Badge on Profile</span>
+                  </li>
+                </ul>
+              </div>
+              <button onclick="RizzApp.initiatePayment('1year', 50, '1 Year Pass')" class="mt-8 w-full py-3.5 px-4 rounded-xl btn-secondary text-white font-bold text-sm transition-all hover:scale-[1.02]">
+                Get 1 Year for ₹50
+              </button>
+            </div>
+
+            <!-- Plan 3: Lifetime - ₹59 -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col justify-between border-2 border-rose-500 bg-gradient-to-b from-rose-950/40 via-card to-black/70 relative shadow-2xl shadow-rose-500/20 transform md:-translate-y-2">
+              <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-[11px] font-black tracking-wider uppercase text-white shadow-lg flex items-center gap-1">
+                <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                <span>Best Value • VIP Lifetime</span>
+              </div>
+              <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-rose-300 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/30">Never Expire</span>
+                  <i data-lucide="infinity" class="w-6 h-6 text-rose-400"></i>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white">Lifetime Pass</h3>
+                  <p class="text-xs text-rose-300/80 mt-1">Only ₹9 more than 1 Year! Forever VIP Access.</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-5xl font-black text-rose-400">₹59</span>
+                  <span class="text-xs text-slate-400">/ One-time forever</span>
+                </div>
+                <div class="w-full h-px bg-white/10"></div>
+                <ul class="space-y-3 text-sm text-slate-200">
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>
+                    <span><strong>Permanent VIP Membership</strong></span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>
+                    <span>Golden Rizz Number Badge</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>
+                    <span>Instant Direct 1-on-1 Video Calling</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>
+                    <span>24/7 Global Connection Engine</span>
+                  </li>
+                </ul>
+              </div>
+              <button onclick="RizzApp.initiatePayment('lifetime', 59, 'Lifetime Pass')" class="mt-8 w-full py-4 px-4 rounded-xl btn-primary text-white font-extrabold text-base shadow-xl shadow-rose-500/30 transition-all hover:scale-[1.03]">
+                Unlock Lifetime for ₹59
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Security trust banner -->
+          <div class="flex flex-wrap items-center justify-center gap-6 text-slate-400 text-xs">
+            <span class="flex items-center gap-1.5"><i data-lucide="lock" class="w-4 h-4 text-emerald-400"></i> 256-Bit SSL Encrypted</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Instant Instant Access Activation</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="smartphone" class="w-4 h-4 text-cyan-400"></i> UPI / GPay / PhonePe / Paytm</span>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: ONBOARDING / DETAIL FORM (Shown right after successful payment) -->
+    <!-- ========================================================================= -->
+    <main id="view-onboarding" class="view-screen hidden flex-1 py-12 px-4 sm:px-6 max-w-3xl mx-auto w-full">
+      <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-white/10 shadow-2xl space-y-8 relative">
+        
+        <!-- Payment Success Badge -->
+        <div class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+              <i data-lucide="check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="text-xs text-emerald-300 font-bold uppercase tracking-wider">Payment Verified</p>
+              <p id="onboarding-plan-label" class="text-sm font-semibold text-white">Lifetime VIP Pass Active</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2 py-1 rounded bg-white/10 text-slate-300">Access Granted</span>
+        </div>
+
+        <div class="text-left space-y-2">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Complete Your Rizz Profile</h2>
+          <p class="text-sm text-slate-400">
+            Tell us about yourself and what you're looking for. This will generate your official <span class="text-rose-400 font-bold">Rizz Number</span> and calibrate your matches.
+          </p>
+        </div>
+
+        <form id="onboarding-form" onsubmit="RizzApp.submitOnboarding(event)" class="space-y-6">
+          
+          <!-- Name & Age Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Full Name *</label>
+              <input type="text" id="ob-name" required placeholder="e.g. Aryan Sharma" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                Your Age * (18 to 99)
+              </label>
+              <input type="number" id="ob-age" min="18" max="99" required placeholder="18-99" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm">
+            </div>
+          </div>
+
+          <!-- Gender & Target Preference Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Your Gender *</label>
+              <select id="ob-gender" required class="w-full px-4 py-3 rounded-xl bg-[#171a2e] border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm cursor-pointer">
+                <option value="male" selected>Male (Show me Females)</option>
+                <option value="female">Female (Show me Males)</option>
+                <option value="other">Non-Binary / Everyone</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Qualification / Profession *</label>
+              <input type="text" id="ob-qualification" required placeholder="e.g. Software Engineer, Doctor, Student" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm">
+            </div>
+          </div>
+
+          <!-- Hobby & Target Age Preference -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Your Main Hobbies *</label>
+              <input type="text" id="ob-hobby" required placeholder="e.g. Music, Travel, Gym, Photography" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                Target Age Group: <span id="target-age-label" class="text-rose-400 font-bold">18 - 35</span> yrs
+              </label>
+              <div class="flex items-center gap-3">
+                <input type="range" id="ob-target-min" min="18" max="99" value="18" oninput="RizzApp.updateAgeRangeDisplay()" class="w-full">
+                <span class="text-xs text-slate-400">to</span>
+                <input type="range" id="ob-target-max" min="18" max="99" value="35" oninput="RizzApp.updateAgeRangeDisplay()" class="w-full">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bio Input -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Bio / Dating Vibe</label>
+            <textarea id="ob-bio" rows="2" placeholder="Tell people what makes you laugh or what a dream first date looks like..." class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm"></textarea>
+          </div>
+
+          <!-- Upload 1 to 5 Photos -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Upload Photos * (1 to 5 photos)
+                </label>
+                <p class="text-xs text-slate-400">Upload at least 1 photo to start. Tap to add or remove.</p>
+              </div>
+              <span id="photo-count-badge" class="text-xs font-bold px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                0 / 5 Photos
+              </span>
+            </div>
+
+            <!-- Photos Grid (5 slots) -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="photo-upload-grid">
+              <!-- Slot 1 -->
+              <div class="photo-slot" onclick="RizzApp.triggerPhotoSelect(0)" id="slot-0">
+                <i data-lucide="plus" class="w-6 h-6 text-slate-400 mb-1"></i>
+                <span class="text-[11px] text-slate-400">Photo 1 (Main)</span>
+              </div>
+              <!-- Slot 2 -->
+              <div class="photo-slot" onclick="RizzApp.triggerPhotoSelect(1)" id="slot-1">
+                <i data-lucide="plus" class="w-6 h-6 text-slate-400 mb-1"></i>
+                <span class="text-[11px] text-slate-400">Photo 2</span>
+              </div>
+              <!-- Slot 3 -->
+              <div class="photo-slot" onclick="RizzApp.triggerPhotoSelect(2)" id="slot-2">
+                <i data-lucide="plus" class="w-6 h-6 text-slate-400 mb-1"></i>
+                <span class="text-[11px] text-slate-400">Photo 3</span>
+              </div>
+              <!-- Slot 4 -->
+              <div class="photo-slot" onclick="RizzApp.triggerPhotoSelect(3)" id="slot-3">
+                <i data-lucide="plus" class="w-6 h-6 text-slate-400 mb-1"></i>
+                <span class="text-[11px] text-slate-400">Photo 4</span>
+              </div>
+              <!-- Slot 5 -->
+              <div class="photo-slot" onclick="RizzApp.triggerPhotoSelect(4)" id="slot-4">
+                <i data-lucide="plus" class="w-6 h-6 text-slate-400 mb-1"></i>
+                <span class="text-[11px] text-slate-400">Photo 5</span>
+              </div>
+            </div>
+
+            <input type="file" id="photo-file-input" accept="image/*" class="hidden" onchange="RizzApp.handlePhotoUploaded(event)">
+            
+            <!-- Quick Preset Photos Helper -->
+            <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+              <span>Don't have photos handy?</span>
+              <button type="button" onclick="RizzApp.useSamplePhotos()" class="text-rose-400 hover:underline font-semibold">
+                Use Beautiful Demo Photos
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full py-4 rounded-2xl btn-primary text-white font-extrabold text-base shadow-xl shadow-rose-500/30 flex items-center justify-center gap-2">
+            <span>Enter Rizzsembly & Start Dating</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </form>
+
+      </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: DISCOVERY FEED / HOME (Opposite Gender Matches + Random Video Call) -->
+    <!-- ========================================================================= -->
+    <main id="view-home" class="view-screen hidden flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
+      
+      <!-- Video Call Hero Banner (Gender doesn't matter, connects people worldwide) -->
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-rose-500/30 relative overflow-hidden bg-gradient-to-r from-rose-950/40 via-purple-950/30 to-black/60 shadow-2xl">
+        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="space-y-2 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/30">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Instant Global Video Hub
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">
+              Instant 1-Click Video Call With Anyone Worldwide
+            </h2>
+            <p class="text-sm text-slate-300 max-w-xl">
+              Gender doesn't matter here — connect with real people all over the world in seconds. Skip, in-call chat, and add each other to friends anytime!
+            </p>
+          </div>
+          <button onclick="RizzApp.startRandomVideoCall()" class="w-full md:w-auto px-8 py-4 rounded-2xl btn-primary text-white font-black text-base flex items-center justify-center gap-3 shadow-xl shadow-rose-500/40 hover:scale-105 transition-all">
+            <i data-lucide="video" class="w-5 h-5"></i>
+            <span>Start Random Video Call</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feed Header & Opposite Gender Notification -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-black text-white brand-font">Curated Matches</h2>
+            <span id="target-filter-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-rose-300 border border-white/10">
+              Opposite Gender Feed
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1" id="filter-status-text">Showing verified profiles tailored to your age bracket.</p>
+        </div>
+
+        <!-- Filter toggles -->
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+            <input type="text" id="feed-search-input" oninput="RizzApp.filterFeed()" placeholder="Search hobby, city..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <select id="feed-age-filter" onchange="RizzApp.filterFeed()" class="px-3 py-2 rounded-xl bg-[#171a2e] border border-white/10 text-xs text-slate-300 focus:outline-none">
+            <option value="all">All Ages (18-99)</option>
+            <option value="18-24">18 - 24 yrs</option>
+            <option value="25-30">25 - 30 yrs</option>
+            <option value="31+">31+ yrs</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Feed Grid -->
+      <div id="feed-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: FRIENDS LIST & DIRECT CHAT / VIDEO CALL -->
+    <!-- ========================================================================= -->
+    <main id="view-friends" class="view-screen hidden flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-6">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+          <h2 class="text-2xl font-black text-white brand-font">Your Friends & Connections</h2>
+          <p class="text-xs text-slate-400 mt-1">Friends added via their unique Rizz Number or through video calls.</p>
+        </div>
+        <button onclick="RizzApp.openAddFriendModal()" class="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold flex items-center gap-2 transition-all">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>Add by Rizz #</span>
+        </button>
+      </div>
+
+      <!-- Friends Container Grid / Empty State -->
+      <div id="friends-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Filled dynamically -->
+      </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 5: SETTINGS & RIZZ NUMBER -->
+    <!-- ========================================================================= -->
+    <main id="view-settings" class="view-screen hidden flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-8">
+      
+      <div class="border-b border-white/10 pb-4">
+        <h2 class="text-2xl font-black text-white brand-font">Account Settings & Rizz Profile</h2>
+        <p class="text-xs text-slate-400 mt-1">Manage your identity, membership pass, and unique Rizz Number.</p>
+      </div>
+
+      <!-- Rizz Number Highlight Card -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border-2 border-rose-500/40 bg-gradient-to-r from-rose-950/40 via-purple-950/30 to-black/60 shadow-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Your Official Identification</span>
+            <h3 class="text-xl sm:text-2xl font-black text-white">Your Unique Rizz Number</h3>
+            <p class="text-xs text-slate-300">
+              Share this number with anyone so they can search and add you to their friend list instantly.
+            </p>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <div id="settings-rizz-number" class="text-2xl sm:text-3xl font-black font-mono px-5 py-3 rounded-2xl bg-white/10 border border-white/20 text-rose-400 tracking-wider">
+              #RIZZ-000000
+            </div>
+            <button onclick="RizzApp.copyRizzNumber()" class="p-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/30 transition-all hover:scale-105" title="Copy Rizz Number">
+              <i data-lucide="copy" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Account Info Form -->
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+        <h4 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="user" class="w-5 h-5 text-rose-400"></i>
+          <span>Profile Details</span>
+        </h4>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Name</label>
+            <input type="text" id="settings-name" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-sm text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Age</label>
+            <input type="number" id="settings-age" min="18" max="99" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-sm text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Gender</label>
+            <input type="text" id="settings-gender" disabled class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-slate-400 capitalize">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Qualification</label>
+            <input type="text" id="settings-qualification" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-sm text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Hobbies</label>
+            <input type="text" id="settings-hobby" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-sm text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-slate-400 block mb-1">Bio</label>
+            <textarea id="settings-bio" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-sm text-white focus:outline-none focus:border-rose-500"></textarea>
+          </div>
+        </div>
+
+        <!-- Membership Status -->
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <i data-lucide="shield-check" class="w-6 h-6 text-emerald-400"></i>
+            <div>
+              <p class="text-xs text-slate-400">Subscription Status</p>
+              <p id="settings-plan-status" class="text-sm font-bold text-white">Lifetime VIP Pass Active</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            Paid & Verified
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between pt-4">
+          <button onclick="RizzApp.saveSettingsProfile()" class="px-6 py-3 rounded-xl btn-primary text-white font-bold text-sm">
+            Save Changes
+          </button>
+          <button onclick="RizzApp.resetApp()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold">
+            Reset Demo & Clear Data
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- BOTTOM NAVIGATION (Mobile Friendly Dock) -->
+    <!-- ========================================================================= -->
+    <div id="mobile-bottom-dock" class="hidden md:hidden fixed bottom-0 left-0 right-0 z-40 p-2 border-t border-white/10 nav-dock">
+      <div class="grid grid-cols-5 items-center text-center">
+        <button onclick="RizzApp.navigateTo('home')" class="nav-item flex flex-col items-center py-1.5 active" data-page="home">
+          <i data-lucide="compass" class="nav-icon w-5 h-5 mb-1"></i>
+          <span class="text-[10px]">Discover</span>
+        </button>
+        <button onclick="RizzApp.showView('landing')" class="nav-item flex flex-col items-center py-1.5" data-page="landing">
+          <i data-lucide="qr-code" class="nav-icon w-5 h-5 mb-1 text-cyan-400"></i>
+          <span class="text-[10px]">Pay & QR</span>
+        </button>
+        <button onclick="RizzApp.navigateTo('friends')" class="nav-item flex flex-col items-center py-1.5" data-page="friends">
+          <i data-lucide="users" class="nav-icon w-5 h-5 mb-1"></i>
+          <span class="text-[10px]">Friends</span>
+        </button>
+        <button onclick="RizzApp.openAddFriendModal()" class="nav-item flex flex-col items-center py-1.5" data-page="add-friend">
+          <i data-lucide="user-plus" class="nav-icon w-5 h-5 mb-1"></i>
+          <span class="text-[10px]">Add Friend</span>
+        </button>
+        <button onclick="RizzApp.navigateTo('settings')" class="nav-item flex flex-col items-center py-1.5" data-page="settings">
+          <i data-lucide="settings" class="nav-icon w-5 h-5 mb-1"></i>
+          <span class="text-[10px]">Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-6 px-4 text-center text-xs text-slate-500 mt-auto">
+      <p>© 2026 Rizzsembly Inc. Designed for authentic dating & spontaneous global video connections.</p>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: PAYMENT GATEWAY (UPI / GPay / PhonePe / QR Code) -->
+  <!-- ========================================================================= -->
+  <div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl space-y-6 relative animate-scaleUp">
+      
+      <button onclick="RizzApp.closePaymentModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-purple-600 flex items-center justify-center mx-auto text-white shadow-lg shadow-rose-500/30">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Unlock Rizzsembly</h3>
+        <p class="text-xs text-slate-400">Pay securely to verify your profile and activate instant access.</p>
+      </div>
+
+      <!-- Plan Summary -->
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+        <div>
+          <p id="modal-plan-name" class="text-sm font-bold text-white">Lifetime Pass</p>
+          <p class="text-xs text-slate-400">One-time entry fee</p>
+        </div>
+        <div class="text-right">
+          <p id="modal-plan-price" class="text-2xl font-black text-rose-400">₹59</p>
+          <p class="text-[10px] text-emerald-400 font-semibold">Taxes Included</p>
+        </div>
+      </div>
+
+      <!-- Payment Options: UPI / QR -->
+      <div class="space-y-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-300">Fast UPI Payment</p>
+        
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="RizzApp.simulatePaymentSuccess('GPay')" class="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-1 transition-all">
+            <span class="text-base font-bold text-emerald-400">GPay</span>
+            <span class="text-[10px] text-slate-400">Google Pay</span>
+          </button>
+          <button onclick="RizzApp.simulatePaymentSuccess('PhonePe')" class="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-1 transition-all">
+            <span class="text-base font-bold text-purple-400">PhonePe</span>
+            <span class="text-[10px] text-slate-400">Instant UPI</span>
+          </button>
+          <button onclick="RizzApp.simulatePaymentSuccess('Paytm')" class="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-1 transition-all">
+            <span class="text-base font-bold text-cyan-400">Paytm</span>
+            <span class="text-[10px] text-slate-400">UPI / Wallet</span>
+          </button>
+        </div>
+
+        <!-- Official UPI QR Code Section -->
+        <div class="p-5 rounded-2xl bg-white flex flex-col items-center justify-center text-slate-900 space-y-3 mt-4 border-2 border-cyan-400 shadow-xl relative overflow-hidden">
+          <div class="flex items-center justify-between w-full px-1 border-b border-slate-200 pb-2">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="qr-code" class="w-4 h-4 text-cyan-600"></i>
+              <span class="text-xs font-black tracking-wide uppercase text-slate-800">Scan & Pay via any UPI</span>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800">Accepted Everywhere</span>
+          </div>
+
+          <!-- Real Uploaded QR Code Image -->
+          <div class="p-2 bg-white rounded-2xl border-2 border-slate-300 shadow-inner flex flex-col items-center justify-center">
+            <img src="assets/qr-code.jpg" alt="UPI Payment QR Code" class="w-48 h-48 sm:w-52 sm:h-52 object-contain rounded-xl">
+          </div>
+
+          <!-- UPI Supported Apps Logos / Badges -->
+          <div class="flex items-center justify-center gap-2 text-[11px] font-bold text-slate-600">
+            <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200">GPay</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200">PhonePe</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200">Paytm</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200">BHIM UPI</span>
+          </div>
+
+          <p class="text-[11px] text-center text-slate-500 font-medium">
+            Scan using any mobile UPI app, pay the exact plan amount, then click below to verify.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button id="pay-confirm-btn" onclick="RizzApp.simulatePaymentSuccess('UPI QR')" class="w-full py-4 rounded-xl btn-primary text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-500/30 hover:scale-[1.02] transition-all">
+        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        <span id="pay-button-text">I Have Paid • Unlock Website</span>
+      </button>
+
+      <p class="text-[11px] text-center text-slate-400">
+        ⚡ Instant Verification & Access Activation after scanning
+      </p>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: ADD FRIEND BY RIZZ NUMBER -->
+  <!-- ========================================================================= -->
+  <div id="add-friend-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl space-y-6 relative">
+      
+      <button onclick="RizzApp.closeAddFriendModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="space-y-2 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto border border-rose-500/30">
+          <i data-lucide="user-plus" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Add Friend by Rizz Number</h3>
+        <p class="text-xs text-slate-400">
+          Enter any member's unique Rizz Number (e.g. <span class="text-rose-400 font-mono">RIZZ-882194</span> or <span class="text-rose-400 font-mono">RIZZ-491823</span>) to add them.
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Enter Rizz Number</label>
+          <div class="relative">
+            <input type="text" id="add-rizz-input" placeholder="e.g. RIZZ-882194" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 focus:border-rose-500 focus:outline-none text-white text-sm uppercase tracking-wider font-mono">
+            <button onclick="RizzApp.searchRizzNumber()" class="absolute right-2 top-2 px-3 py-1.5 rounded-lg bg-rose-500 text-white text-xs font-bold hover:bg-rose-600 transition-all">
+              Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Result Box -->
+        <div id="rizz-search-result" class="hidden p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+          <!-- Filled via JS -->
+        </div>
+
+        <!-- Sample Rizz Numbers Quick Chips -->
+        <div class="space-y-1.5 pt-2">
+          <p class="text-[11px] text-slate-400">Quick Test Suggested Members:</p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="RizzApp.fillSearchRizz('RIZZ-882194')" class="text-[11px] font-mono px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-rose-300 border border-white/10">
+              #RIZZ-882194 (Priya)
+            </button>
+            <button onclick="RizzApp.fillSearchRizz('RIZZ-491823')" class="text-[11px] font-mono px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-cyan-300 border border-white/10">
+              #RIZZ-491823 (Kabir)
+            </button>
+            <button onclick="RizzApp.fillSearchRizz('RIZZ-904812')" class="text-[11px] font-mono px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-purple-300 border border-white/10">
+              #RIZZ-904812 (Elena)
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3: 1-ON-1 DIRECT CHAT MODAL (Chat with Friends) -->
+  <!-- ========================================================================= -->
+  <div id="chat-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-4 modal-overlay">
+    <div class="glass-panel w-full max-w-xl h-[85vh] rounded-3xl border border-white/20 shadow-2xl flex flex-col overflow-hidden relative">
+      
+      <!-- Chat Header -->
+      <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <img id="chat-header-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-rose-500">
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#0a0a14] rounded-full"></span>
+          </div>
+          <div>
+            <h4 id="chat-header-name" class="font-bold text-white text-sm">Friend Name</h4>
+            <p id="chat-header-rizz" class="text-[11px] font-mono text-rose-400">#RIZZ-000000</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Direct Video Call with this friend -->
+          <button onclick="RizzApp.startDirectFriendVideoCall()" class="p-2.5 rounded-xl bg-white/10 hover:bg-rose-500 text-white transition-all" title="Video Call Friend">
+            <i data-lucide="video" class="w-4 h-4"></i>
+          </button>
+          <button onclick="RizzApp.closeChatModal()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 transition-all">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Body -->
+      <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Chat Input Footer -->
+      <form onsubmit="RizzApp.sendDirectMessage(event)" class="p-4 border-t border-white/10 bg-white/5 flex items-center gap-2">
+        <input type="text" id="chat-input-text" placeholder="Type a message..." class="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-rose-500 focus:outline-none text-white text-sm">
+        <button type="submit" class="px-5 py-3 rounded-xl btn-primary text-white font-bold text-sm flex items-center gap-1.5">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Send</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 6 / FULLSCREEN OVERLAY: RANDOM GLOBAL VIDEO CALL (Omegle/OmeTV style) -->
+  <!-- ========================================================================= -->
+  <div id="videocall-overlay" class="fixed inset-0 z-50 hidden bg-[#05060b] flex flex-col justify-between overflow-hidden">
+    
+    <!-- Video Call Top Bar -->
+    <div class="relative z-20 px-4 sm:px-8 py-3.5 flex items-center justify-between bg-black/40 backdrop-blur-md border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+        <div class="flex items-center gap-2">
+          <span class="font-black text-white text-base brand-font">Rizz<span class="text-rose-500">Live</span></span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300">Worldwide Random Video</span>
+        </div>
+      </div>
+
+      <!-- Live stranger stats -->
+      <div class="flex items-center gap-4">
+        <div id="call-partner-info" class="hidden sm:flex items-center gap-2 text-xs text-slate-300">
+          <span id="call-partner-country" class="font-semibold text-rose-300">Connecting...</span>
+          <span id="call-partner-rizz" class="font-mono bg-white/10 px-2 py-0.5 rounded text-[11px]">#RIZZ</span>
+        </div>
+
+        <button onclick="RizzApp.endVideoCall()" class="px-3.5 py-1.5 rounded-xl bg-rose-600/30 hover:bg-rose-600 text-rose-200 text-xs font-bold transition-all flex items-center gap-1.5">
+          <i data-lucide="phone-off" class="w-3.5 h-3.5"></i>
+          <span>Exit Call</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Video Stage Area -->
+    <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+      
+      <!-- Remote Stranger Video / Canvas / Image Stream -->
+      <div id="remote-stream-container" class="w-full h-full relative flex items-center justify-center">
+        
+        <!-- Searching Radar State -->
+        <div id="radar-searching-state" class="flex flex-col items-center justify-center space-y-4 text-center p-6">
+          <div class="radar-scanner">
+            <i data-lucide="globe-2" class="w-12 h-12 text-rose-500 animate-spin" style="animation-duration: 6s;"></i>
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-xl font-bold text-white">Looking for someone across the globe...</h3>
+            <p class="text-xs text-slate-400">Connecting video and microphone streams</p>
+          </div>
+          <button onclick="RizzApp.skipStranger()" class="px-5 py-2 rounded-xl bg-white/10 text-xs font-bold text-slate-200 hover:bg-white/20 transition-all">
+            Skip to Next Match
+          </button>
+        </div>
+
+        <!-- Connected Stranger View -->
+        <div id="connected-stranger-view" class="hidden w-full h-full relative">
+          <!-- Stranger Video Element / Simulation -->
+          <video id="stranger-video-element" class="w-full h-full object-cover" autoplay loop muted playsinline></video>
+          
+          <!-- Fallback image stream for stranger -->
+          <img id="stranger-avatar-stream" src="" alt="Stranger" class="w-full h-full object-cover hidden">
+          
+          <!-- Stranger Overlay Info Card -->
+          <div class="absolute top-4 left-4 p-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/15 text-white flex items-center gap-3">
+            <div class="status-dot"></div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="stranger-name-tag" class="font-bold text-sm">Elena Rostova</span>
+                <span id="stranger-country-tag" class="text-xs">🇷🇺</span>
+              </div>
+              <span id="stranger-rizz-tag" class="text-[10px] font-mono text-rose-400">#RIZZ-904812</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Self Camera PIP Preview (Real Webcam Feed) -->
+      <div class="self-video-pip overflow-hidden group">
+        <video id="self-webcam-video" class="w-full h-full object-cover" autoplay muted playsinline></video>
+        <!-- Self video fallback placeholder if camera is blocked/denied -->
+        <div id="self-camera-placeholder" class="hidden w-full h-full bg-[#1b1e36] flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+          <i data-lucide="camera-off" class="w-6 h-6 mb-1 text-rose-400"></i>
+          <span class="text-[10px]">Camera Inactive</span>
+        </div>
+        <div class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-bold text-white tracking-wider">
+          YOU
+        </div>
+      </div>
+
+      <!-- Live Video Chat Drawer (Collapsible) -->
+      <div id="video-chat-drawer" class="absolute bottom-24 left-4 sm:left-6 w-[280px] sm:w-[320px] max-h-[220px] rounded-2xl bg-black/70 backdrop-blur-lg border border-white/15 p-3 flex flex-col justify-between z-30 transition-all">
+        <div class="flex items-center justify-between pb-1.5 border-b border-white/10 text-xs font-bold text-slate-300">
+          <span class="flex items-center gap-1.5"><i data-lucide="message-square" class="w-3.5 h-3.5 text-rose-400"></i> In-Call Chat</span>
+          <span class="text-[10px] text-slate-400">Stranger</span>
+        </div>
+        <div id="video-chat-messages" class="flex-1 overflow-y-auto space-y-2 py-2 text-xs">
+          <!-- In-call messages -->
+        </div>
+        <form onsubmit="RizzApp.sendVideoCallMessage(event)" class="flex items-center gap-1.5 pt-1 border-t border-white/10">
+          <input type="text" id="video-chat-input" placeholder="Say something..." class="flex-1 px-2.5 py-1.5 rounded-lg bg-white/10 text-white text-xs border border-white/10 focus:outline-none focus:border-rose-500">
+          <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-rose-500 text-white text-xs font-bold">
+            <i data-lucide="send" class="w-3 h-3"></i>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Video Call Bottom Floating Control Dock -->
+    <div class="relative z-30 px-4 py-4 sm:py-5 bg-black/70 backdrop-blur-lg border-t border-white/10 flex items-center justify-center gap-3 sm:gap-6">
+      
+      <!-- Skip Button -->
+      <button onclick="RizzApp.skipStranger()" class="flex items-center gap-2 px-4 sm:px-6 py-3 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-bold text-sm border border-white/20 transition-all hover:scale-105 active:scale-95" title="Skip to next stranger">
+        <i data-lucide="skip-forward" class="w-5 h-5 text-amber-400"></i>
+        <span>Skip</span>
+      </button>
+
+      <!-- Toggle In-Call Chat -->
+      <button onclick="RizzApp.toggleVideoChatDrawer()" class="p-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-105" title="Toggle Chat">
+        <i data-lucide="message-circle" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Add Friend Button (Direct from Call) -->
+      <button id="call-add-friend-btn" onclick="RizzApp.addCurrentStrangerAsFriend()" class="flex items-center gap-2 px-4 sm:px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-500/30 transition-all hover:scale-105" title="Add this stranger as friend">
+        <i data-lucide="user-plus" class="w-5 h-5"></i>
+        <span id="call-add-friend-text">Add Friend</span>
+      </button>
+
+      <!-- Camera Toggle -->
+      <button onclick="RizzApp.toggleCamera()" id="btn-toggle-cam" class="p-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-105" title="Mute/Unmute Camera">
+        <i data-lucide="camera" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Call End Button -->
+      <button onclick="RizzApp.endVideoCall()" class="flex items-center gap-2 px-5 sm:px-7 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm shadow-xl shadow-rose-600/40 transition-all hover:scale-105 active:scale-95">
+        <i data-lucide="phone-off" class="w-5 h-5"></i>
+        <span>End</span>
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Scripts -->
+  <script src="js/mockData.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
